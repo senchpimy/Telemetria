@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pico Sensores Avanzado</title>
+
+    <!-- GoldenLayout CSS -->
+    <link type="text/css" rel="stylesheet" href="https://golden-layout.com/assets/css/goldenlayout-base.css" />
+    <link type="text/css" rel="stylesheet" href="https://golden-layout.com/assets/css/goldenlayout-dark-theme.css" /> <!-- O el tema que prefieras -->
+
+    <!-- Leaflet CSS (antes de tus estilos para overrides) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+    <style>
+        /* --- Estilos Globales y Tema Oscuro (simplificado) --- */
+        :root { /* (Tus variables de color) */
+            --dark-bg: #1a1a1a;
+            --panel-bg: #2a2a2a; /* Este será el fondo de los items de GoldenLayout */
+            --text-color: #e0e0e0;
+            --text-secondary: #aaa;
+            --border-color: #444;
+            --accent-color: #4682B4;
+            --accent-hover: #5a9bdc;
+            --shadow-color: rgba(0,0,0,0.4);
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Evitar scrollbars dobles */
+            font-family: sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+        }
+        #pageContainer {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        #controlsHeader {
+            padding: 10px;
+            background-color: #222; /* Un poco más oscuro que el fondo */
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0; /* No encoger el header */
+        }
+        #layoutContainer {
+            width: 100%;
+            height: calc(100% - 70px); /* Ajustar según altura del header */
+            flex-grow: 1; /* Ocupar el resto del espacio */
+        }
+        button { /* Estilos básicos de botón */
+            padding: 8px 15px; font-size: 14px; cursor: pointer;
+            background-color: var(--accent-color); color: white;
+            border: none; border-radius: 4px; transition: background-color 0.2s ease;
+        }
+        button:hover { background-color: var(--accent-hover); }
+        button:disabled { background-color: #555; cursor: not-allowed; }
+        #status { margin-left: 15px; color: var(--text-secondary); }
+        #rawDataOutput {
+            font-family: monospace; background: #333; color: #ccc;
+            padding: 5px 8px; margin-top: 8px; max-height: 50px;
+            overflow-y: auto; border: 1px solid var(--border-color);
+            border-radius: 4px; font-size: 0.8em; text-align: left;
+        }
+
+        /* Estilos para contenido dentro de los paneles de GoldenLayout */
+        .gl_component_container { /* Contenedor que GoldenLayout crea para tu contenido */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Importante para que el contenido interno se ajuste */
+            background-color: var(--panel-bg); /* Fondo de cada panel */
+        }
+        .panel-content {
+            flex-grow: 1;
+            overflow: auto; /* Scroll si el contenido es más grande */
+            padding: 10px; /* Espaciado interno */
+            display: flex; /* Para centrar o estirar el canvas/mapa */
+            flex-direction: column; /* Para que el título y contenido se apilen */
+        }
+        .panel-content h3 { /* Título dentro del panel */
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: var(--text-color);
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        #modelContainer, #mapContainer, .chart-wrapper {
+            width: 100%;
+            height: 100%; /* Hacer que ocupe el espacio del panel-content */
+            flex-grow: 1;
+        }
+        .chart-wrapper {
+            min-height: 150px; /* Altura mínima para las gráficas */
+        }
+        canvas { max-width: 100%; max-height: 100%; }
+
+        /* Leaflet popup oscuro */
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+            background: var(--panel-bg); color: var(--text-color); box-shadow: 0 3px 14px var(--shadow-color);
+        }
+    </style>
+</head>
+<body>
+    <div id="pageContainer">
+        <div id="controlsHeader">
+            <button id="connectButton">Conectar al Puerto Serial</button>
+            <span id="status">Estado: Desconectado</span>
+            <div id="rawDataOutput">(Raw data aparecerá aquí...)</div>
+        </div>
+
+        <!-- Contenedor donde GoldenLayout creará el layout dinámico -->
+        <div id="layoutContainer"></div>
+    </div>
+
+
+    <!-- Librerías JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- GoldenLayout requiere jQuery -->
+    <script src="https://golden-layout.com/assets/js/goldenlayout.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+    <!-- Tu script principal -->
+    <script src="app.js"></script>
+</body>
+</html>
